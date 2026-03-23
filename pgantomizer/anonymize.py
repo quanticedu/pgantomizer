@@ -266,7 +266,7 @@ def anonymize_db(schema, db_args, disable_schema_changes):
         with conn.cursor() as cursor:
             check_schema(cursor, schema, db_args)
             cursor.execute(
-                "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type <> 'VIEW' ORDER BY table_name;"
+                "SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name;"
             )
             for table_name in cursor.fetchall():
                 anonymize_table(conn, cursor, schema, table_name[0], disable_schema_changes)
