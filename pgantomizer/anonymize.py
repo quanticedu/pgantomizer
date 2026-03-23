@@ -353,12 +353,18 @@ def main():
     parser.add_argument("--port", help="port where the DB is running", default="5432")
 
     args = parser.parse_args()
+
+    # Extract and clear the password from args immediately so it cannot
+    # leak via Namespace repr in Python tracebacks.
+    password = args.password
+    args.password = "***"
+
     if args.verbose:
         logging.basicConfig(format="%(levelname)s: %(message)s", level=logging.DEBUG)
     else:
         logging.basicConfig(format="%(levelname)s: %(message)s")
 
-    print(args)
+    logging.debug(args)
     if not args.skip_restore and not os.path.isfile(args.dump_file):
         sys.exit('File with dump "{}" does not exist.'.format(args.dump_file))
 
@@ -370,7 +376,7 @@ def main():
             name: value
             for name, value in zip(
                 DB_ARG_NAMES,
-                (args.dbname, args.user, args.password, args.host, args.port),
+                (args.dbname, args.user, password, args.host, args.port),
             )
         }
         if args.dbname and args.user
